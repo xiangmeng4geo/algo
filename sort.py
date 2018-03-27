@@ -1,8 +1,8 @@
 from time import time
 
 import numpy as np
-from numba import jit, cuda
-
+from numba import jit
+import math
 from utils import check_sort, calc_time
 
 
@@ -66,39 +66,74 @@ def shell_sort(arr):
 
 
 @calc_time
-# @jit(cache=True)
+@jit(cache=True)
 def merge_sort(arr):
     length = len(arr)
     if length == 1:
         return arr
     step = 0
-    while np.math.pow(2, step) < length:
-        # left_start = 0
-        # left_end = step ** 2
-        # right_start = step ** 2
-        # right_end = step ** 2
-        print(step)
+    while math.pow(2, step) < length:
+        result = np.empty_like(arr)
+        offset = 0
+        left_start = offset
+        pow_step = int(math.pow(2, step))
+        left_end = pow_step + offset
+        right_end = pow_step * 2 + offset
+        while left_start < length:
+            left, right = arr[left_start:left_end], arr[left_end:right_end]
+            i = 0
+            j = 0
+            llen = len(left)
+            rlen = len(right)
+            while i < llen and j < rlen:
+                if left[i] < right[j]:
+                    result[left_start + i + j] = left[i]
+                    i += 1
+                else:
+                    result[left_start + i + j] = right[j]
+                    j += 1
+            if i != llen:
+                result[(left_start + i + j):right_end] = left[i:]
+            elif j != rlen:
+                result[(left_start + i + j):right_end] = right[j:]
+            offset = right_end
+            left_start = offset
+            left_end = pow_step + offset
+            right_end = pow_step * 2 + offset
+        arr = result
         step += 1
     return arr
 
 
 @calc_time
-def numpy_sort(arr):
-    arr.sort()
+def numpy_quick_sort(arr):
+    arr.sort(kind='quicksort')
+    return arr
+
+@calc_time
+def numpy_merge_sort(arr):
+    arr.sort(kind='mergesort')
+    return arr
+
+@calc_time
+def numpy_heap_sort(arr):
+    arr.sort(kind='heapsort')
     return arr
 
 
 if __name__ == '__main__':
-    size = 10000
+    size = 1000000
     arr = (np.random.rand(size) * 100)  # m.astype(np.int)
     # arr.sort()
     algos = [
-        bubble_sort,
-        select_sort,
-        insert_sort,
+        # bubble_sort,
+        # select_sort,
+        # insert_sort,
         shell_sort,
         merge_sort,
-        numpy_sort
+        numpy_quick_sort,
+        numpy_merge_sort,
+        numpy_heap_sort
     ]
     # select_sort: 0.172759
     # insert_sort: 0.030061
