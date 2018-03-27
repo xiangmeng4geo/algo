@@ -10,7 +10,7 @@ from utils import check_sort, calc_time
 @jit(cache=True)
 def bubble_sort(arr):
     flag = True
-    for i in range(len(arr), 0, -1):
+    for i in range(len(arr) - 1, 0, -1):
         if not flag:
             break
         flag = False
@@ -66,14 +66,19 @@ def shell_sort(arr):
 
 
 @calc_time
-@jit(cache=True)
+# @jit(cache=True)
 def merge_sort(arr):
-    split = len(arr) // 2
-    if split >= 1:
-        left = merge_sort(arr[:split])
-        right = merge_sort(arr[split:])
-
-
+    length = len(arr)
+    if length == 1:
+        return arr
+    step = 0
+    while np.math.pow(2, step) < length:
+        # left_start = 0
+        # left_end = step ** 2
+        # right_start = step ** 2
+        # right_end = step ** 2
+        print(step)
+        step += 1
     return arr
 
 
@@ -92,6 +97,7 @@ if __name__ == '__main__':
         select_sort,
         insert_sort,
         shell_sort,
+        merge_sort,
         numpy_sort
     ]
     # select_sort: 0.172759
