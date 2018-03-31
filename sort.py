@@ -106,14 +106,44 @@ def merge_sort(arr):
 
 
 @calc_time
+# @jit(cache=True)
+def quick_sort(arr):
+    qsort(arr, 0, len(arr))
+    return arr
+
+
+@jit(cache=True)
+def qsort(arr, low, high):
+    if low < high:
+        pivot = partition(arr, low, high)
+        qsort(arr, low, pivot)
+        qsort(arr, pivot + 1, high)
+
+
+@jit(cache=True)
+def partition(arr, low, high):
+    p = arr[low]
+    j = low
+    for i in range(low + 1, high):
+        if arr[i] < p:
+            j += 1
+            arr[j], arr[i] = arr[i], arr[j]
+
+    arr[low], arr[j] = arr[j], arr[low]
+    return j
+
+
+@calc_time
 def numpy_quick_sort(arr):
     arr.sort(kind='quicksort')
     return arr
+
 
 @calc_time
 def numpy_merge_sort(arr):
     arr.sort(kind='mergesort')
     return arr
+
 
 @calc_time
 def numpy_heap_sort(arr):
@@ -131,6 +161,7 @@ if __name__ == '__main__':
         # insert_sort,
         shell_sort,
         merge_sort,
+        quick_sort,
         numpy_quick_sort,
         numpy_merge_sort,
         numpy_heap_sort
@@ -139,5 +170,13 @@ if __name__ == '__main__':
     # insert_sort: 0.030061
     # bubble_sort: 0.117479
     # numpy_sort: 0.000417
+
+    # len = 1000000
+    # shell_sort: 0.198706
+    # merge_sort: 0.109793
+    # quick_sort: 0.087326
+    # numpy_quick_sort: 0.059800
+    # numpy_merge_sort: 0.071746
+    # numpy_heap_sort: 0.106557
     for a in algos:
         a(arr)
